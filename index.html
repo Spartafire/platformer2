@@ -17,7 +17,7 @@
 			physics:{
 				default: 'arcade',
 				arcade: {
-					gravity: {y: 500},
+					gravity: {y: 200},
 					debug: false
 				}
 			},
@@ -55,6 +55,11 @@
 
 			//player animations
 			this.load.atlas('player', 'assets/player.png', 'assets/player.json');
+		
+			this.load.audio("theme",[
+						"assets/01 - Jump Up, Super Star!.mp3"
+						]);
+
 		}
 
 		/**
@@ -83,9 +88,11 @@
 
 			//PLAYER
 				
-				player = this.physics.add.sprite(200,200, 'player');
-				player.setBounce(0.2);
+				player = this.physics.add.sprite(150,200, 'player');
+				player.setBounce(0.05);
 				player.setCollideWorldBounds(true);
+				player.body.setGravity(0, 350);
+
 
 				//Add Keyboard Events
 				cursors = this.input.keyboard.createCursorKeys();
@@ -138,12 +145,23 @@
 			
 			//SCORE UI
 				
-				text = this.add.text(20, 570, '0', {
+				text = this.add.text(20, 570, 'Score: 0', {
 					fontSize : '20px',
 					fill: '#ffffff'
 				});
 				text.setScrollFactor(0);
 
+			//audio
+				var music = this.sound.add("theme");
+				music.play();
+				var loopMarker = {
+        				name: 'loop',
+        				start: 0,
+        				duration: 246,
+       					config: {
+           					 loop: true
+       					 }
+       				};
 		}
 
 		/**
@@ -174,6 +192,9 @@
 					//flip image horizontally
 					player.flipX = false;
 
+				}else{
+						player.setVelocityX(0);
+						player.anims.play("idle", true);
 				}
 
 				if((cursors.space.isDown || cursors.up.isDown) && player.body.onFloor()){
@@ -197,10 +218,11 @@
 			score++;
 
 			//update Score UI
-			text.setText(score);
+			text.setText("Score: " + score);
 
 			return false;
 		}
+		
 
 	</script>	
 	
