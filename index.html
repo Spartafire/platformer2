@@ -12,8 +12,8 @@
 
 		var config = {
 			type : Phaser.AUTO,
-			width: 800,
-			height: 600,
+			width: 1000,
+			height: 1000,
 			physics:{
 				default: 'arcade',
 				arcade: {
@@ -38,6 +38,10 @@
 		var text;
 		var score = 0;
 		var text;
+		var fkey;
+		var timedEvent;
+
+		var isBlockVisible = false;
 
 		/**
 		 * [preload: This function is used to load the assets for our game]
@@ -52,6 +56,9 @@
 
 			//simple coin image
 			this.load.image('coin', 'assets/coinGold.png');
+
+			//Blocks
+			//this.load.image('block', 'assets/coinGold.png');
 
 			//player animations
 			this.load.atlas('player', 'assets/player.png', 'assets/player.json');
@@ -78,8 +85,12 @@
 				//create the ground layer
 				groundLayer = map.createDynamicLayer('World', groundTiles, 0, 0);
 
+				//create the ground layer
+				blockLayer = map.createDynamicLayer('Blocks', groundTiles, 0, 0);
+
 				//The player will collide with this layer
 				groundLayer.setCollisionByExclusion([-1]);
+				blockLayer.setCollisionByExclusion([-1]);
 
 				//set the boundaries of our game world
 				this.physics.world.bounds.width 	= groundLayer.width;
@@ -153,16 +164,36 @@
 
 			//audio
 				var music = this.sound.add("theme");
-				music.play();
-				var loopMarker = {
-        				name: 'loop',
-        				start: 0,
-        				duration: 246,
-       					config: {
-           					 loop: true
-       					 }
-       				};
+				soundManager( music );
+
+				var self = this;
+    			this.input.keyboard.on('keydown_F', function (event) {
+
+			        console.log('Hello from the F Key!');
+			        if(isBlockVisible){
+			        	blockLayer.setAlpha(0)
+			        	isBlockVisible = false;
+			        }else{
+			        	blockLayer.setAlpha(0.5)
+			        	isBlockVisible = true;
+			        	timedEvent = self.time.delayedCall(750, onEvent, [], self);
+			        }
+			        
+
+			    
+				});
+
+
 		}
+
+		function onEvent() {
+			blockLayer.setAlpha(0)
+			isBlockVisible = false;
+		}
+
+		function soundManager( clip ){					
+    			clip.play({loop: true});
+			}
 
 		/**
 		 * [update is the main game loop]
@@ -174,7 +205,7 @@
 				
 				if( cursors.left.isDown ){ // If the left arrow key is pressed down
 					//activate motion
-					player.body.setVelocityX(-200);
+					player.body.setVelocityX(-400);
 
 					//activate animation
 					player.anims.play('walk', true);
@@ -184,7 +215,7 @@
 
 				}else if(cursors.right.isDown){  // If the right arrow key is pressed down
 					//activate motion
-					player.body.setVelocityX(200);
+					player.body.setVelocityX(400);
 
 					//activate animation
 					player.anims.play('walk', true);
@@ -201,6 +232,8 @@
 					
 					player.body.setVelocityY(-500);
 				}
+
+				
 		}
 
 
